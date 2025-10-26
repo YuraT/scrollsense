@@ -1,4 +1,4 @@
-# ScrollSense - Mindful YouTube Shorts
+# Scrollage - Mindful YouTube Shorts
 
 A Chrome extension that helps you build mindful viewing habits on YouTube Shorts while supporting charitable causes.
 
