@@ -115,9 +115,14 @@ async function loadSettings() {
  */
 function setupEventListeners() {
   const saveBtn = document.getElementById('save-settings');
+  const donateBtn = document.getElementById('donate-now-btn');
 
   if (saveBtn) {
     saveBtn.addEventListener('click', saveSettings);
+  }
+  
+  if (donateBtn) {
+    donateBtn.addEventListener('click', handleDonateNow);
   }
 }
 
@@ -344,10 +349,10 @@ function getCharityInfo(charityName) {
       description: 'Free education for anyone, anywhere',
       icon: '📚'
     },
-    'WWF': {
-      name: 'World Wildlife Fund',
-      description: 'Protecting wildlife and endangered species',
-      icon: '🐼'
+    'St. Jude': {
+      name: 'St. Jude Children\'s Research Hospital',
+      description: 'Leading the way the world understands, treats and defeats childhood cancer and other life-threatening diseases.',
+      icon: '🏥'
     },
     'Doctors Without Borders': {
       name: 'Doctors Without Borders',
@@ -372,11 +377,11 @@ function calculateImpact(cents, charity) {
       description: 'can access free lessons',
       icon: '📚'
     },
-    'WWF': {
-      unit: 'acres',
-      calculate: (amount) => (amount * 0.3).toFixed(2),
-      description: 'of habitat protected',
-      icon: '🌲'
+    'St. Jude': {
+      unit: 'minutes',
+      calculate: (amount) => (amount * 6.3).toFixed(2),
+      description: 'minutes of research funded',
+      icon: '🏥'
     },
     'Doctors Without Borders': {
       unit: 'vaccines',
@@ -439,4 +444,48 @@ function getDonationProgress(cents) {
     progress: Math.min(progress, 100),
     cents
   };
+}
+
+/**
+ * Get donation URL for charity with pre-filled amount
+ * @param {string} charity - Charity name
+ * @param {number} cents - Amount in cents
+ * @returns {string} Donation URL
+ */
+function getDonationUrl(charity, cents) {
+  const dollars = (cents / 100).toFixed(2);
+  
+  const urls = {
+    'Khan Academy': `https://donate.khanacademy.org/checkout?cid=580662&oid=83430&amount=${dollars}&frequency=one-time&currency=USD&step=0`,
+    'St. Jude': `https://www.stjude.org/donate/donate-to-st-jude.html?express=0&sc_icid=charitablegifts-donate-bttn-df&amount=${dollars}&frequency_selected=0`,
+    'Doctors Without Borders': `https://give.doctorswithoutborders.org/checkout?cid=687007&oid=86396&amount=${dollars}&frequency=one-time&currency=USD&step=0`
+  };
+  
+  return urls[charity] || urls['Khan Academy'];
+}
+
+/**
+ * Handle donate now button click
+ */
+async function handleDonateNow() {
+  const localData = await chrome.storage.local.get(['todayDonations']);
+  const syncData = await chrome.storage.sync.get(['selectedCharity']);
+  
+  const donations = localData.todayDonations || 0;
+  const charity = syncData.selectedCharity || 'Khan Academy';
+  
+  if (donations === 0) {
+    alert('No donations to pay yet! Continue scrolling past your limit to accumulate donations.');
+    return;
+  }
+  
+  // Open charity donation page with pre-filled amount
+  const donationUrl = getDonationUrl(charity, donations);
+  chrome.tabs.create({ url: donationUrl });
+  
+  // Reset donation amount to 0 after opening donation page
+  await chrome.storage.local.set({ todayDonations: 0 });
+  
+  // Reload stats to reflect reset
+  await loadStats();
 }

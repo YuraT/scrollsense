@@ -101,6 +101,31 @@ body {
 .stat-value {
   font-size: 20px;
   font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.donate-now-btn {
+  width: 100%;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.donate-now-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.donate-now-btn:active {
+  transform: translateY(0);
 }
 
 /* ===== Impact Section ===== */
@@ -384,3 +409,4 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
