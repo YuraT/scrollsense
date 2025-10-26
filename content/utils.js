@@ -99,11 +99,22 @@ function isYouTubeShorts() {
 }
 
 /**
- * Get YouTube video player element
+ * Get video player element (works for YouTube, TikTok, Instagram)
  * @returns {HTMLVideoElement|null}
  */
 function getVideoElement() {
-  return document.querySelector('video');
+  // Try to find the currently playing video
+  const videos = document.querySelectorAll('video');
+  
+  // Return the first non-paused video, or the first video found
+  for (const video of videos) {
+    if (!video.paused) {
+      return video;
+    }
+  }
+  
+  // If all are paused, return the first one
+  return videos[0] || null;
 }
 
 /**

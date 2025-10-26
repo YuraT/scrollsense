@@ -8,6 +8,7 @@ class ScrollLimitModal {
     this.modalElement = null;
     this.isShowing = false;
     this.countdownInterval = null;
+    this.pauseInterval = null;
     this.remainingSeconds = 0;
     this.videoElement = null;
     this.wasPlaying = false;
@@ -27,17 +28,39 @@ class ScrollLimitModal {
     this.remainingSeconds = waitTime;
     this.isShowing = true;
 
-    // Pause video
+    // Pause video aggressively
     this.videoElement = getVideoElement();
     if (this.videoElement) {
       this.wasPlaying = !this.videoElement.paused;
-      this.videoElement.pause();
+      this.pauseVideo();
+      
+      // Keep pausing if video tries to auto-resume
+      this.pauseInterval = setInterval(() => {
+        if (this.videoElement && !this.videoElement.paused) {
+          this.videoElement.pause();
+        }
+      }, 100);
     }
 
     // Create and show modal
     this.createModal(charity);
     this.attachToPage();
     this.startCountdown();
+  }
+
+  /**
+   * Pause video with multiple methods
+   */
+  pauseVideo() {
+    if (!this.videoElement) return;
+    
+    try {
+      this.videoElement.pause();
+      // Also try to stop it from auto-playing
+      this.videoElement.setAttribute('data-scrollsense-paused', 'true');
+    } catch (err) {
+      console.log('Error pausing video:', err);
+    }
   }
 
   /**
@@ -159,7 +182,7 @@ class ScrollLimitModal {
         });
       }
 
-      // Enable button when countdown reaches 0
+      // Enable button when countdown reaches 1
       if (this.remainingSeconds <= 0) {
         clearInterval(this.countdownInterval);
         if (continueBtn) {
@@ -187,8 +210,15 @@ class ScrollLimitModal {
   close() {
     if (!this.isShowing) return;
 
+    // Clear pause interval
+    if (this.pauseInterval) {
+      clearInterval(this.pauseInterval);
+      this.pauseInterval = null;
+    }
+
     // Resume video if it was playing
     if (this.videoElement && this.wasPlaying) {
+      this.videoElement.removeAttribute('data-scrollsense-paused');
       this.videoElement.play().catch(err => {
         console.log('Could not resume video:', err);
       });
