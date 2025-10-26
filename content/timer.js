@@ -10,6 +10,7 @@ class TimerOverlay {
     this.intervalId = null;
     this.isActive = false;
     this.limitReached = false;
+    this.baseWatchtime = 0; // Watchtime at session start
   }
 
   /**
@@ -18,8 +19,8 @@ class TimerOverlay {
   async init() {
     this.createTimerElement();
     this.attachToPage();
+    await this.startTracking();
     await this.updateDisplay();
-    this.startTracking();
   }
 
   /**
@@ -65,16 +66,24 @@ class TimerOverlay {
   /**
    * Start tracking watchtime
    */
-  startTracking() {
+  async startTracking() {
     if (this.isActive) return;
 
     this.isActive = true;
     this.startTime = Date.now();
 
+    // Get current watchtime from storage as base
+    const data = await getLocalStorage(['todayWatchtime']);
+    this.baseWatchtime = data.todayWatchtime || 0;
+
     // Update display every second
-    this.intervalId = setInterval(async () => {
-      await this.updateWatchtime();
-      await this.updateDisplay();
+    this.intervalId = setInterval(() => {
+      this.updateWatchtime().catch(err => {
+        console.error('ScrollSense: Error updating watchtime:', err);
+      });
+      this.updateDisplay().catch(err => {
+        console.error('ScrollSense: Error updating display:', err);
+      });
     }, 1000);
   }
 
@@ -96,30 +105,47 @@ class TimerOverlay {
 
   /**
    * Update watchtime in storage
+   * Calculates current watchtime based on elapsed time since session start
    */
   async updateWatchtime() {
-    if (!this.startTime) return;
+    if (!this.startTime) {
+      console.warn('ScrollSense: startTime is null in updateWatchtime');
+      return;
+    }
 
-    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-    const data = await getLocalStorage(['todayWatchtime']);
-    const currentWatchtime = data.todayWatchtime || 0;
+    // Calculate total elapsed time since session start
+    const elapsedSinceStart = Math.floor((Date.now() - this.startTime) / 1000);
+    const newWatchtime = this.baseWatchtime + elapsedSinceStart;
 
     await setLocalStorage({
-      todayWatchtime: currentWatchtime + elapsed
+      todayWatchtime: newWatchtime
     });
 
-    // Reset start time for next interval
-    this.startTime = Date.now();
+    console.log(`ScrollSense: Updated watchtime: ${newWatchtime}s (base: ${this.baseWatchtime}s + elapsed: ${elapsedSinceStart}s)`);
   }
 
   /**
    * Update timer display with current watchtime and color
+   * Calculates watchtime locally for instant updates
    */
   async updateDisplay() {
-    const data = await getLocalStorage(['todayWatchtime']);
-    const settings = await getSyncStorage(['dailyLimit']);
+    // Check if timer element is still in DOM, re-attach if needed
+    if (this.timerElement && !document.body.contains(this.timerElement)) {
+      console.log('ScrollSense: Timer element detached, re-attaching');
+      this.attachToPage();
+    }
 
-    const watchtime = data.todayWatchtime || 0;
+    if (!this.timerElement) {
+      console.error('ScrollSense: Timer element is null');
+      return;
+    }
+
+    // Calculate current watchtime based on elapsed time (no storage read needed)
+    const elapsedSinceStart = Math.floor((Date.now() - this.startTime) / 1000);
+    const watchtime = this.baseWatchtime + elapsedSinceStart;
+
+    // Get settings for limit
+    const settings = await getSyncStorage(['dailyLimit']);
     const limit = (settings.dailyLimit || 30) * 60; // Convert minutes to seconds
 
     const percentage = (watchtime / limit) * 100;
