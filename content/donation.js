@@ -81,7 +81,7 @@ function calculateImpact(cents, charity) {
     unit: impact.unit,
     description: impact.description,
     icon: impact.icon,
-    formatted: `${value} ${impact.unit}`
+    formatted: `${value} ${impact.unit}`,
   };
 }
 
@@ -126,7 +126,7 @@ function getDonationProgress(cents) {
     currentTier,
     nextGoal,
     progress: Math.min(progress, 100),
-    cents
+    cents,
   };
 }
 
@@ -137,6 +137,13 @@ class DonationBanner {
   constructor() {
     this.bannerElement = null;
     this.isShowing = false;
+
+    // Listen for donation updates
+    window.addEventListener("scrollsense:donationUpdated", async (event) => {
+      if (this.isShowing) {
+        await this.updateContent();
+      }
+    });
   }
 
   /**
@@ -207,7 +214,31 @@ class DonationBanner {
   }
 
   /**
-   * Update banner content
+   * Update banner content dynamically without recreating the entire banner
+   */
+  async updateContent() {
+    if (!this.bannerElement) return;
+
+    const data = await getLocalStorage(['todayDonations']);
+    const settings = await getSyncStorage(['selectedCharity']);
+    const charity = settings.selectedCharity || 'Khan Academy';
+
+    const donationAmount = data.todayDonations || 0;
+    const impact = calculateImpact(donationAmount, charity);
+
+    // Update the donation amount and impact text
+    const subtitleElement =
+      this.bannerElement.querySelector('.banner-subtitle');
+    if (subtitleElement) {
+      subtitleElement.innerHTML = `
+        You've donated <strong>${formatDonation(donationAmount)}</strong> to ${charity} today
+        <span class="banner-impact">${impact.icon} ${impact.formatted} ${impact.description}</span>
+      `;
+    }
+  }
+
+  /**
+   * Update banner content (legacy method - recreates banner)
    */
   async update() {
     if (this.isShowing) {
