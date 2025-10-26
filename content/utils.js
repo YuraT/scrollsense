@@ -95,7 +95,7 @@ function formatTimeForPopup(seconds) {
  * @returns {boolean}
  */
 function isYouTubeShorts() {
-  return window.location.pathname.includes('/shorts/');
+  return window.location.pathname.includes('/shorts/') || window.location.search.includes('/reels/');
 }
 
 /**

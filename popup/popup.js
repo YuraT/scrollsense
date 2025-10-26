@@ -368,19 +368,19 @@ function calculateImpact(cents, charity) {
   const impacts = {
     'Khan Academy': {
       unit: 'students',
-      calculate: (amount) => Math.floor(amount * 10),
+      calculate: (amount) => Math.floor(amount),
       description: 'can access free lessons',
       icon: '📚'
     },
     'WWF': {
       unit: 'acres',
-      calculate: (amount) => Math.floor(amount * 2),
+      calculate: (amount) => (amount * 0.3).toFixed(2),
       description: 'of habitat protected',
       icon: '🌲'
     },
     'Doctors Without Borders': {
       unit: 'vaccines',
-      calculate: (amount) => Math.floor(amount * 5),
+      calculate: (amount) => (amount * 0.35).toFixed(2),
       description: 'provided',
       icon: '💉'
     }
