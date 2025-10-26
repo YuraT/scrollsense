@@ -21,9 +21,11 @@ class ScrollLimitModal {
     if (this.isShowing) return;
 
     // Get settings
-    const settings = await getSyncStorage(['waitTime', 'selectedCharity']);
+    const settings = await getSyncStorage(['waitTime', 'selectedCharity', 'donationAmount']);
     const waitTime = settings.waitTime || 5;
     const charity = settings.selectedCharity || 'Khan Academy';
+    const donationAmount = settings.donationAmount || 100;
+    const formattedDonationAmount = formatDonation(donationAmount);
 
     this.remainingSeconds = waitTime;
     this.isShowing = true;
@@ -43,7 +45,7 @@ class ScrollLimitModal {
     }
 
     // Create and show modal
-    this.createModal(charity);
+    this.createModal(charity, formattedDonationAmount);
     this.attachToPage();
     this.startCountdown();
   }
@@ -66,7 +68,7 @@ class ScrollLimitModal {
   /**
    * Create modal element
    */
-  createModal(charity) {
+  createModal(charity, formattedDonationAmount) {
     const charityInfo = getCharityInfo(charity);
     const recommendations = getRecommendations();
 
@@ -132,7 +134,7 @@ class ScrollLimitModal {
 
       <div class="modal-footer">
         <button id="scrollsense-continue-btn" class="continue-btn" disabled>
-          <span class="btn-text">Continue to Shorts</span>
+          <span class="btn-text">Continue for </span><span class="btn-amount" id="scrollsense-amount-text">${formattedDonationAmount}</span>
         </button>
       </div>
     `;
