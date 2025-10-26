@@ -8,8 +8,8 @@
  */
 async function incrementDonation() {
   const syncData = await getSyncStorage(['donationAmount']);
-  const donationAmount = syncData.donationAmount || 100; // Default $0.10 in cents
-  
+  const donationAmount = syncData.donationAmount || 100; // Default $1.00 in cents
+
   const data = await getLocalStorage(['todayDonations']);
   const currentDonations = data.todayDonations || 0;
 

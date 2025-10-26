@@ -93,7 +93,7 @@ async function loadSettings() {
   const dailyLimit = data.dailyLimit || 30;
   const selectedCharity = data.selectedCharity || 'Khan Academy';
   const waitTime = data.waitTime || 5;
-  const donationAmount = data.donationAmount || 10;
+  const donationAmount = data.donationAmount || 100;
 
 
   // Set form values
