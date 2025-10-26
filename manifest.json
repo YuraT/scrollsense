@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "ScrollSense - Mindful YouTube Shorts",
+  "version": "1.0.0",
+  "description": "Track your YouTube Shorts watchtime, set limits, and donate to charity with every scroll.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": [
+        "content/utils.js",
+        "content/recommendations.js",
+        "content/donation.js",
+        "content/timer.js",
+        "content/modal.js",
+        "content/index.js"
+      ],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["content/*.js"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ]
+}
