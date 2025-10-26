@@ -134,7 +134,7 @@ class ScrollLimitModal {
 
       <div class="modal-footer">
         <button id="scrollsense-continue-btn" class="continue-btn" disabled>
-          <span class="btn-text">Continue for </span><span class="btn-amount" id="scrollsense-amount-text">${formattedDonationAmount}</span>
+          <span class="btn-text">Continue by donating </span><span class="btn-amount" id="scrollsense-amount-text">${formattedDonationAmount}</span>
         </button>
       </div>
     `;
