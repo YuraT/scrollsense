@@ -59,11 +59,11 @@ function calculateImpact(cents, charity) {
       description: 'students can access free lessons',
       icon: '📚'
     },
-    'WWF': {
-      unit: 'acres',
-      calculate: (amount) => (amount * 0.3).toFixed(2),
-      description: 'acres of habitat protected',
-      icon: '🌲'
+    'St. Jude': {
+      unit: 'minutes',
+      calculate: (amount) => (amount * 6.3).toFixed(2),
+      description: 'minutes of research funded',
+      icon: '👶'
     },
     'Doctors Without Borders': {
       unit: 'vaccines',
