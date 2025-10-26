@@ -247,11 +247,11 @@ function getCharityInfo(charityName) {
       impact: 'Provides free educational resources to millions of students worldwide',
       icon: '📚'
     },
-    'WWF': {
-      name: 'World Wildlife Fund',
-      description: 'Protecting wildlife and endangered species',
-      impact: 'Helps protect endangered species and their habitats',
-      icon: '🐼'
+    'St. Jude': {
+      name: 'St. Jude',
+      description: 'Children\'s research hospital',
+      impact: 'Helps treat and save children with cancer and other life-threatening diseases',
+      icon: '👶'
     },
     'Doctors Without Borders': {
       name: 'Doctors Without Borders',
