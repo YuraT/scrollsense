@@ -8,13 +8,14 @@ chrome.runtime.onInstalled.addListener(async () => {
   console.log('ScrollSense extension installed');
 
   // Set default sync settings if not already set
-  const syncData = await chrome.storage.sync.get(['dailyLimit', 'selectedCharity', 'waitTime']);
+  const syncData = await chrome.storage.sync.get(['dailyLimit', 'selectedCharity', 'waitTime', 'donationAmount']);
 
   if (!syncData.dailyLimit) {
     await chrome.storage.sync.set({
       dailyLimit: 30, // 30 minutes default
       selectedCharity: 'Khan Academy',
-      waitTime: 5 // 5 seconds wait time
+      waitTime: 5, // 5 seconds wait time
+      donationAmount: 100 // $0.10 per scroll in cents
     });
   }
 

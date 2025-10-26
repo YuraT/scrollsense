@@ -7,18 +7,21 @@
  * Increment donation counter when user continues past limit
  */
 async function incrementDonation() {
+  const syncData = await getSyncStorage(['donationAmount']);
+  const donationAmount = syncData.donationAmount || 100; // Default $0.10 in cents
+  
   const data = await getLocalStorage(['todayDonations']);
   const currentDonations = data.todayDonations || 0;
 
   await setLocalStorage({
-    todayDonations: currentDonations + 10 // $0.10 per scroll in cents
+    todayDonations: currentDonations + donationAmount
   });
 
-  console.log('Donation incremented:', currentDonations + 10);
+  console.log('Donation incremented:', currentDonations + donationAmount);
 
   // Dispatch event for other components to update
   window.dispatchEvent(new CustomEvent('scrollsense:donationUpdated', {
-    detail: { totalDonations: currentDonations + 10 }
+    detail: { totalDonations: currentDonations + donationAmount }
   }));
 }
 

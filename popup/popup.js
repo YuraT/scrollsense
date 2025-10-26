@@ -23,6 +23,7 @@ async function loadStats() {
   const donations = localData.todayDonations || 0;
   const charity = syncData.selectedCharity || 'Khan Academy';
 
+
   // Update watchtime display
   const watchtimeEl = document.getElementById('today-watchtime');
   if (watchtimeEl) {
@@ -87,20 +88,26 @@ function updateImpactSection(cents, charity) {
  * Load settings from storage
  */
 async function loadSettings() {
-  const data = await chrome.storage.sync.get(['dailyLimit', 'selectedCharity', 'waitTime']);
+  const data = await chrome.storage.sync.get(['dailyLimit', 'selectedCharity', 'waitTime', 'donationAmount']);
 
   const dailyLimit = data.dailyLimit || 30;
   const selectedCharity = data.selectedCharity || 'Khan Academy';
   const waitTime = data.waitTime || 5;
+  const donationAmount = data.donationAmount || 10;
+
 
   // Set form values
   const dailyLimitEl = document.getElementById('daily-limit');
   const charityEl = document.getElementById('charity-select');
   const waitTimeEl = document.getElementById('wait-time');
+  const donationAmountEl = document.getElementById('donation-amount');
+
 
   if (dailyLimitEl) dailyLimitEl.value = dailyLimit;
   if (charityEl) charityEl.value = selectedCharity;
   if (waitTimeEl) waitTimeEl.value = waitTime;
+  if (donationAmountEl) donationAmountEl.value = donationAmount;
+
 }
 
 /**
@@ -122,10 +129,12 @@ async function saveSettings() {
   const charityEl = document.getElementById('charity-select');
   const waitTimeEl = document.getElementById('wait-time');
   const messageEl = document.getElementById('save-message');
+  const donationAmountEl = document.getElementById('donation-amount');
 
   const dailyLimit = parseInt(dailyLimitEl.value) || 30;
   const selectedCharity = charityEl.value;
   const waitTime = parseInt(waitTimeEl.value) || 5;
+  const donationAmount = parseInt(donationAmountEl.value) || 100;
 
   // Validate inputs
   if (dailyLimit < 1 || dailyLimit > 180) {
@@ -138,11 +147,17 @@ async function saveSettings() {
     return;
   }
 
+  if (donationAmount < 1 || donationAmount > 100) {
+    alert('Donation amount must be between 1 and 100 cents');
+    return;
+  }
+
   // Save to storage
   await chrome.storage.sync.set({
     dailyLimit,
     selectedCharity,
-    waitTime
+    waitTime,
+    donationAmount
   });
 
   // Show success message

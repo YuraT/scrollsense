@@ -79,8 +79,8 @@ const EDUCATIONAL_VIDEOS = [
     category: 'Nature'
   },
   {
-    title: 'Philosophy: A Guide to Happiness',
-    url: 'https://www.youtube.com/watch?v=XUvADwGDQSs',
+    title: 'What is Philosophy?: Crash Course Philosophy #1', 
+    url: 'https://www.youtube.com/watch?v=1A_CAkYt3GY',
     impact: 'Explore philosophical thinking',
     icon: '🤔',
     category: 'Philosophy'
